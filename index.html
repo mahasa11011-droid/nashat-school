@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>منصة النشاط المدرسي</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --purple: #5B4FCF;
+    --purple-deep: #2A2065;
+    --purple-soft: #E4DFF7;
+    --bg: #F5F3FC;
+    --white: #FFFFFF;
+    --ink: #2A2065;
+    --muted: #7A74A8;
+    --maroon: #A31545;
+    --maroon-bg: #FBE7EE;
+    --orange: #D97A3D;
+    --orange-bg: #FBEEE1;
+    --teal: #2F9C93;
+    --teal-bg: #E3F5F3;
+    --navy: #1D3461;
+    --navy-bg: #E7EBF3;
+    --radius: 18px;
+    --shadow: 0 8px 24px rgba(42,32,101,0.08);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Tajawal',sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    line-height:1.7;
+  }
+  h1,h2,h3,.display{
+    font-family:'Cairo',sans-serif;
+    font-weight:800;
+  }
+  a{color:inherit;}
+
+  /* ===== decorative staircase motif (signature element) ===== */
+  .stair{
+    display:inline-block;
+    width:64px; height:44px;
+  }
+  .stair svg{width:100%;height:100%;display:block;}
+
+  /* ===== nav ===== */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(245,243,252,0.85);
+    backdrop-filter: blur(10px);
+    border-bottom:1px solid rgba(91,79,207,0.12);
+  }
+  .nav-wrap{
+    max-width:1100px; margin:0 auto;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 20px;
+  }
+  .brand{display:flex; align-items:center; gap:10px;}
+  .brand-name{font-size:1.05rem; font-weight:800; color:var(--purple-deep);}
+  nav.links{display:flex; gap:4px; overflow-x:auto; scrollbar-width:none;}
+  nav.links::-webkit-scrollbar{display:none;}
+  nav.links a{
+    white-space:nowrap;
+    font-size:0.85rem; font-weight:700;
+    padding:8px 14px; border-radius:999px;
+    color:var(--purple-deep);
+    text-decoration:none;
+  }
+  nav.links a:hover{background:var(--purple-soft);}
+  .admin-btn{
+    border:none; background:var(--purple); color:#fff;
+    padding:8px 16px; border-radius:999px; font-family:'Tajawal';
+    font-weight:700; font-size:0.8rem; cursor:pointer;
+  }
+
+  /* ===== hero ===== */
+  .hero{
+    max-width:1100px; margin:0 auto; padding:56px 20px 40px;
+    position:relative;
+  }
+  .hero-badge{
+    display:inline-flex; align-items:center; gap:8px;
+    background:var(--purple-soft); color:var(--purple-deep);
+    padding:6px 14px; border-radius:999px; font-size:0.78rem; font-weight:700;
+    margin-bottom:18px;
+  }
+  .hero h1{
+    font-size:clamp(1.9rem, 4vw, 3rem);
+    color:var(--purple-deep);
+    margin:0 0 14px;
+    max-width:16ch;
+  }
+  .hero p{color:var(--muted); font-size:1.05rem; max-width:52ch; margin:0;}
+  .hero-stair{position:absolute; left:20px; top:40px; opacity:0.5;}
+
+  /* ===== sections ===== */
+  section{max-width:1100px; margin:0 auto; padding:34px 20px;}
+  .sec-head{display:flex; align-items:center; gap:14px; margin-bottom:22px;}
+  .sec-icon{
+    width:44px; height:44px; border-radius:12px;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Cairo'; font-weight:800; font-size:1rem; color:#fff;
+    flex-shrink:0;
+  }
+  .sec-head h2{font-size:1.35rem; margin:0; color:var(--purple-deep);}
+  .sec-head .sub{color:var(--muted); font-size:0.85rem; margin-top:2px;}
+  .add-btn{
+    margin-inline-start:auto;
+    border:1.5px dashed var(--purple);
+    background:transparent; color:var(--purple);
+    padding:7px 14px; border-radius:999px; font-family:'Tajawal';
+    font-weight:700; font-size:0.8rem; cursor:pointer;
+  }
+  .empty{
+    background:var(--white); border-radius:var(--radius);
+    padding:32px 20px; text-align:center; color:var(--muted);
+    box-shadow:var(--shadow); font-size:0.9rem;
+  }
+
+  /* ===== school info ===== */
+  .info-grid{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:12px;
+  }
+  .info-card{
+    background:var(--white); border-radius:14px; padding:16px 18px;
+    box-shadow:var(--shadow); display:flex; flex-direction:column; gap:4px;
+  }
+  .info-label{font-size:0.75rem; color:var(--muted); font-weight:700;}
+  .info-value{font-family:'Cairo'; font-weight:700; font-size:0.98rem; color:var(--purple-deep);}
+
+  /* ===== announcements ===== */
+  .ann-card{
+    background:var(--white); border-radius:var(--radius);
+    padding:20px; box-shadow:var(--shadow); margin-bottom:12px;
+    border-inline-start:4px solid var(--purple);
+  }
+  .ann-card h3{margin:0 0 6px; font-size:1.02rem; color:var(--purple-deep);}
+  .ann-card p{margin:0; color:var(--muted); font-size:0.9rem;}
+  .ann-card time{display:block; margin-top:10px; font-size:0.75rem; color:var(--purple);}
+
+  /* ===== weekly plan ===== */
+  .plan-item{
+    background:var(--white); border-radius:var(--radius);
+    box-shadow:var(--shadow); padding:18px 20px; margin-bottom:12px;
+    display:flex; gap:16px; align-items:flex-start;
+  }
+  .plan-week{
+    background:var(--purple-soft); color:var(--purple-deep);
+    font-family:'Cairo'; font-weight:800; font-size:0.85rem;
+    padding:6px 12px; border-radius:10px; white-space:nowrap;
+  }
+  .plan-body h3{margin:0 0 4px; font-size:0.98rem;}
+  .plan-body .range{font-size:0.78rem; color:var(--muted); margin-bottom:6px;}
+  .plan-body p{margin:0; font-size:0.88rem; color:var(--muted);}
+
+  /* ===== events timeline ===== */
+  .event-row{
+    display:flex; align-items:center; gap:16px;
+    background:var(--white); border-radius:14px;
+    padding:14px 18px; margin-bottom:10px; box-shadow:var(--shadow);
+  }
+  .event-days{
+    font-family:'Cairo'; font-weight:800; font-size:1.3rem;
+    color:var(--purple); min-width:64px; text-align:center;
+  }
+  .event-days span{display:block; font-size:0.65rem; font-weight:500; color:var(--muted);}
+  .event-info h3{margin:0; font-size:0.95rem;}
+  .event-info .d{font-size:0.78rem; color:var(--muted);}
+
+  /* ===== photos ===== */
+  .photo-grid{
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+    gap:12px;
+  }
+  .photo-grid img{
+    width:100%; aspect-ratio:1; object-fit:cover;
+    border-radius:14px; box-shadow:var(--shadow);
+  }
+
+  /* ===== wall ===== */
+  .wall-grid{
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+    gap:14px; margin-bottom:20px;
+  }
+  .wall-card{
+    border-radius:16px; padding:16px; box-shadow:var(--shadow);
+    font-size:0.88rem;
+  }
+  .wall-card b{display:block; margin-bottom:6px; font-family:'Cairo';}
+  .wc-purple{background:var(--purple-soft); color:var(--purple-deep);}
+  .wc-maroon{background:var(--maroon-bg); color:var(--maroon);}
+  .wc-orange{background:var(--orange-bg); color:var(--orange);}
+  .wc-teal{background:var(--teal-bg); color:var(--teal);}
+
+  .wall-form{
+    background:var(--white); border-radius:var(--radius);
+    padding:20px; box-shadow:var(--shadow);
+    display:flex; flex-wrap:wrap; gap:10px;
+  }
+  input, textarea, select{
+    font-family:'Tajawal'; border:1.5px solid #E1DCF5; border-radius:10px;
+    padding:10px 12px; font-size:0.88rem; background:#FBFAFF;
+  }
+  input:focus, textarea:focus, select:focus{outline:2px solid var(--purple); border-color:transparent;}
+  .wall-form input[name="author"]{flex:1; min-width:140px;}
+  .wall-form select{width:110px;}
+  .wall-form textarea{width:100%; min-height:60px; resize:vertical;}
+  .btn{
+    border:none; background:var(--purple); color:#fff;
+    padding:10px 20px; border-radius:10px; font-family:'Tajawal';
+    font-weight:700; font-size:0.88rem; cursor:pointer;
+  }
+  .btn:hover{background:var(--purple-deep);}
+
+  /* ===== admin panel ===== */
+  .panel{
+    background:var(--white); border-radius:var(--radius);
+    box-shadow:var(--shadow); padding:20px; margin-bottom:18px;
+    display:none; flex-direction:column; gap:10px;
+  }
+  .panel.open{display:flex;}
+  .panel label{font-size:0.8rem; font-weight:700; color:var(--purple-deep);}
+
+  /* ===== modal (login) ===== */
+  .modal-bg{
+    position:fixed; inset:0; background:rgba(42,32,101,0.35);
+    display:none; align-items:center; justify-content:center; z-index:100;
+    padding:20px;
+  }
+  .modal-bg.open{display:flex;}
+  .modal{
+    background:#fff; border-radius:var(--radius); padding:26px;
+    max-width:320px; width:100%; box-shadow:var(--shadow);
+  }
+  .modal h3{margin:0 0 12px;}
+  .modal input{width:100%; margin-bottom:12px;}
+
+  footer{
+    text-align:center; color:var(--muted); font-size:0.8rem;
+    padding:30px 20px 40px;
+  }
+
+  @media (max-width:640px){
+    .hero-stair{display:none;}
+    .nav-wrap{flex-wrap:wrap; gap:10px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav-wrap">
+    <div class="brand">
+      <span class="stair" aria-hidden="true">
+        <svg viewBox="0 0 64 44"><g fill="#5B4FCF">
+          <rect x="26" y="0" width="12" height="12" rx="3"/>
+          <rect x="12" y="12" width="12" height="12" rx="3"/>
+          <rect x="40" y="12" width="12" height="12" rx="3"/>
+          <rect x="0" y="24" width="12" height="12" rx="3"/>
+          <rect x="52" y="24" width="12" height="12" rx="3"/>
+        </g></svg>
+      </span>
+      <span class="brand-name">منصة النشاط المدرسي</span>
+    </div>
+    <nav class="links">
+      <a href="#announcements">الإعلانات</a>
+      <a href="#plan">الخطة الأسبوعية</a>
+      <a href="#events">المناسبات</a>
+      <a href="#photos">الصور</a>
+      <a href="#wall">الحائط</a>
+    </nav>
+    <button class="admin-btn" id="adminToggle">دخول رائدة النشاط</button>
+  </div>
+</header>
+
+<div class="hero">
+  <span class="stair hero-stair" aria-hidden="true">
+    <svg viewBox="0 0 64 44"><g fill="#5B4FCF">
+      <rect x="26" y="0" width="12" height="12" rx="3"/>
+      <rect x="12" y="12" width="12" height="12" rx="3"/>
+      <rect x="40" y="12" width="12" height="12" rx="3"/>
+      <rect x="0" y="24" width="12" height="12" rx="3"/>
+      <rect x="52" y="24" width="12" height="12" rx="3"/>
+    </g></svg>
+  </span>
+  <div class="hero-badge">نشاطنا… شغفٌ يُبدع، وأثرٌ يبقى</div>
+  <h1>مساحة نشاط طالباتنا في مكان واحد</h1>
+  <p>تابعي هنا آخر الإعلانات، الخطة الأسبوعية، المناسبات القادمة، وصور الأنشطة أولاً بأول.</p>
+</div>
+
+<!-- ================= بيانات المدرسة ================= -->
+<section id="school-info">
+  <div class="sec-head">
+    <div class="sec-icon" style="background:var(--purple-deep)">00</div>
+    <div>
+      <h2>بيانات المدرسة</h2>
+      <div class="sub">التعريف بالمدرسة والإدارة التعليمية</div>
+    </div>
+  </div>
+  <div class="info-grid">
+    <div class="info-card">
+      <span class="info-label">اسم المدرسة</span>
+      <span class="info-value">مدرسة الموهوبين التقنية الثانوية بنات</span>
+    </div>
+    <div class="info-card">
+      <span class="info-label">الإدارة التعليمية</span>
+      <span class="info-value">إدارة تعليم الرياض</span>
+    </div>
+    <div class="info-card">
+      <span class="info-label">المرحلة الدراسية</span>
+      <span class="info-value">ثانوي (بنات)</span>
+    </div>
+    <div class="info-card">
+      <span class="info-label">المحافظة</span>
+      <span class="info-value">الرياض</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= الإعلانات ================= -->
+<section id="announcements">
+  <div class="sec-head">
+    <div class="sec-icon" style="background:var(--purple)">01</div>
+    <div>
+      <h2>الإعلانات</h2>
+      <div class="sub">آخر إعلانات النشاط للطالبات وأولياء الأمور</div>
+    </div>
+    <button class="add-btn admin-only" data-panel="panel-ann">+ إضافة إعلان</button>
+  </div>
+
+  <div class="panel" id="panel-ann">
+    <label>عنوان الإعلان</label>
+    <input type="text" id="ann-title" placeholder="مثال: بدء التسجيل في برنامج الفن السابع">
+    <label>تفاصيل الإعلان</label>
+    <textarea id="ann-body" placeholder="اكتبي التفاصيل هنا..."></textarea>
+    <button class="btn" onclick="addAnnouncement()">نشر الإعلان</button>
+  </div>
+
+  <div id="ann-list"><div class="empty">لا يوجد إعلان بعد، سيظهر هنا فور نشره</div></div>
+</section>
+
+<!-- ================= الخطة الأسبوعية ================= -->
+<section id="plan">
+  <div class="sec-head">
+    <div class="sec-icon" style="background:var(--navy)">02</div>
+    <div>
+      <h2>الخطة الأسبوعية</h2>
+      <div class="sub">توزيع برامج النشاط على أسابيع الفصل الدراسي</div>
+    </div>
+    <button class="add-btn admin-only" data-panel="panel-plan">+ إضافة أسبوع</button>
+  </div>
+
+  <div class="panel" id="panel-plan">
+    <label>الفصل الدراسي</label>
+    <input type="text" id="plan-term" placeholder="مثال: الفصل الأول">
+    <label>رقم الأسبوع</label>
+    <input type="number" id="plan-week" placeholder="مثال: 3">
+    <label>تاريخ الأسبوع</label>
+    <input type="text" id="plan-range" placeholder="مثال: ٢٤ ربيع الأول – ٢٨ ربيع الأول">
+    <label>عنوان البرنامج</label>
+    <input type="text" id="plan-title" placeholder="مثال: برنامج تطبيقات STEM">
+    <label>تفاصيل إضافية</label>
+    <textarea id="plan-details" placeholder="اختياري"></textarea>
+    <button class="btn" onclick="addPlan()">إضافة للخطة</button>
+  </div>
+
+  <div id="plan-list"><div class="empty">لم تُضَف أي خطة أسبوعية بعد</div></div>
+</section>
+
+<!-- ================= المناسبات ================= -->
+<section id="events">
+  <div class="sec-head">
+    <div class="sec-icon" style="background:var(--teal)">03</div>
+    <div>
+      <h2>المناسبات العالمية</h2>
+      <div class="sub">الأيام والمناسبات القادمة مرتبة زمنيًا</div>
+    </div>
+    <button class="add-btn admin-only" data-panel="panel-event">+ إضافة مناسبة</button>
+  </div>
+
+  <div class="panel" id="panel-event">
+    <label>اسم المناسبة</label>
+    <input type="text" id="event-title" placeholder="مثال: اليوم العالمي للطفل">
+    <label>تاريخ المناسبة</label>
+    <input type="date" id="event-date">
+    <button class="btn" onclick="addEvent()">إضافة المناسبة</button>
+  </div>
+
+  <div id="event-list"><div class="empty">لا توجد مناسبات قادمة حاليًا</div></div>
+</section>
+
+<!-- ================= الصور ================= -->
+<section id="photos">
+  <div class="sec-head">
+    <div class="sec-icon" style="background:var(--orange)">04</div>
+    <div>
+      <h2>صور النشاط</h2>
+      <div class="sub">لحظات من فعاليات وبرامج النشاط</div>
+    </div>
+    <button class="add-btn admin-only" data-panel="panel-photo">+ رفع صورة</button>
+  </div>
+
+  <div class="panel" id="panel-photo">
+    <label>اختاري صورة</label>
+    <input type="file" id="photo-file" accept="image/*">
+    <label>وصف الصورة (اختياري)</label>
+    <input type="text" id="photo-caption" placeholder="مثال: فعالية اليوم الوطني">
+    <button class="btn" onclick="addPhoto()">رفع الصورة</button>
+    <span id="photo-status" style="font-size:0.8rem;color:var(--muted)"></span>
+  </div>
+
+  <div class="photo-grid" id="photo-grid"></div>
+  <div id="photo-empty" class="empty">لا توجد صور بعد</div>
+</section>
+
+<!-- ================= الحائط الإلكتروني ================= -->
+<section id="wall">
+  <div class="sec-head">
+    <div class="sec-icon" style="background:var(--maroon)">05</div>
+    <div>
+      <h2>الحائط الإلكتروني</h2>
+      <div class="sub">مساحة للرسائل والتهاني والإنجازات، مفتوحة للجميع</div>
+    </div>
+  </div>
+
+  <div class="wall-form" style="margin-bottom:20px;">
+    <input type="text" name="author" id="wall-author" placeholder="اسمك">
+    <select id="wall-color">
+      <option value="purple">بنفسجي</option>
+      <option value="maroon">وردي</option>
+      <option value="orange">برتقالي</option>
+      <option value="teal">فيروزي</option>
+    </select>
+    <textarea id="wall-msg" placeholder="اكتبي رسالتك أو تهنئتك هنا..."></textarea>
+    <button class="btn" onclick="addWall()">نشر على الحائط</button>
+  </div>
+
+  <div class="wall-grid" id="wall-grid"></div>
+  <div id="wall-empty" class="empty">لا توجد رسائل بعد، كوني أول من يكتب!</div>
+</section>
+
+<footer>منصة النشاط المدرسي — تصميم خاص بالمدرسة</footer>
+
+<!-- ===== login modal ===== -->
+<div class="modal-bg" id="loginModal">
+  <div class="modal">
+    <h3>دخول رائدة النشاط</h3>
+    <input type="password" id="admin-pass" placeholder="كلمة المرور">
+    <button class="btn" style="width:100%" onclick="checkAdmin()">دخول</button>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+const SUPABASE_URL = 'https://spefcltrdvkgzikrmayx.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_nZd0mw9G8Y6kHIL923Hhzw_ZyKT7ju-';
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// -------- كلمة مرور رائدة النشاط (غيّريها هنا) --------
+const ADMIN_PASSWORD = 'نشاط2026';
+
+window.checkAdmin = function(){
+  const val = document.getElementById('admin-pass').value;
+  if(val === ADMIN_PASSWORD){
+    sessionStorage.setItem('isAdmin','1');
+    document.getElementById('loginModal').classList.remove('open');
+    showAdminUI();
+  } else {
+    alert('كلمة المرور غير صحيحة');
+  }
+};
+
+function showAdminUI(){
+  document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'inline-flex');
+  document.getElementById('adminToggle').textContent = 'خروج رائدة النشاط';
+}
+
+document.getElementById('adminToggle').addEventListener('click', () => {
+  if(sessionStorage.getItem('isAdmin')){
+    sessionStorage.removeItem('isAdmin');
+    location.reload();
+  } else {
+    document.getElementById('loginModal').classList.add('open');
+  }
+});
+
+document.querySelectorAll('.add-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const p = document.getElementById(btn.dataset.panel);
+    p.classList.toggle('open');
+  });
+});
+
+if(sessionStorage.getItem('isAdmin')) showAdminUI();
+
+// ================= الإعلانات =================
+async function loadAnnouncements(){
+  const {data} = await supabase.from('announcements').select('*').order('created_at',{ascending:false});
+  const list = document.getElementById('ann-list');
+  if(!data || data.length===0){ list.innerHTML = '<div class="empty">لا يوجد إعلان بعد، سيظهر هنا فور نشره</div>'; return; }
+  list.innerHTML = data.map(a => `
+    <div class="ann-card">
+      <h3>${escapeHtml(a.title)}</h3>
+      <p>${escapeHtml(a.body||'')}</p>
+      <time>${new Date(a.created_at).toLocaleDateString('ar-SA')}</time>
+    </div>`).join('');
+}
+window.addAnnouncement = async function(){
+  const title = document.getElementById('ann-title').value.trim();
+  const body = document.getElementById('ann-body').value.trim();
+  if(!title) return alert('اكتبي عنوان الإعلان');
+  await supabase.from('announcements').insert({title, body});
+  document.getElementById('ann-title').value='';
+  document.getElementById('ann-body').value='';
+  loadAnnouncements();
+};
+
+// ================= الخطة الأسبوعية =================
+async function loadPlan(){
+  const {data} = await supabase.from('weekly_plan').select('*').order('week_number',{ascending:true});
+  const list = document.getElementById('plan-list');
+  if(!data || data.length===0){ list.innerHTML = '<div class="empty">لم تُضَف أي خطة أسبوعية بعد</div>'; return; }
+  list.innerHTML = data.map(p => `
+    <div class="plan-item">
+      <div class="plan-week">${escapeHtml(p.term)}<br>أسبوع ${p.week_number}</div>
+      <div class="plan-body">
+        <h3>${escapeHtml(p.title)}</h3>
+        <div class="range">${escapeHtml(p.date_range||'')}</div>
+        <p>${escapeHtml(p.details||'')}</p>
+      </div>
+    </div>`).join('');
+}
+window.addPlan = async function(){
+  const term = document.getElementById('plan-term').value.trim();
+  const week_number = parseInt(document.getElementById('plan-week').value);
+  const date_range = document.getElementById('plan-range').value.trim();
+  const title = document.getElementById('plan-title').value.trim();
+  const details = document.getElementById('plan-details').value.trim();
+  if(!term || !week_number || !title) return alert('عبي الفصل، رقم الأسبوع، وعنوان البرنامج');
+  await supabase.from('weekly_plan').insert({term, week_number, date_range, title, details});
+  ['plan-term','plan-week','plan-range','plan-title','plan-details'].forEach(id=>document.getElementById(id).value='');
+  loadPlan();
+};
+
+// ================= المناسبات =================
+async function loadEvents(){
+  const {data} = await supabase.from('events').select('*').order('event_date',{ascending:true});
+  const list = document.getElementById('event-list');
+  const today = new Date(); today.setHours(0,0,0,0);
+  const upcoming = (data||[]).filter(e => new Date(e.event_date) >= today);
+  if(upcoming.length===0){ list.innerHTML = '<div class="empty">لا توجد مناسبات قادمة حاليًا</div>'; return; }
+  list.innerHTML = upcoming.map(e => {
+    const d = new Date(e.event_date);
+    const days = Math.round((d - today) / 86400000);
+    return `<div class="event-row">
+      <div class="event-days">${days}<span>يوم متبقي</span></div>
+      <div class="event-info">
+        <h3>${escapeHtml(e.title)}</h3>
+        <div class="d">${d.toLocaleDateString('ar-SA-u-ca-gregory',{year:'numeric',month:'long',day:'numeric'})}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+window.addEvent = async function(){
+  const title = document.getElementById('event-title').value.trim();
+  const event_date = document.getElementById('event-date').value;
+  if(!title || !event_date) return alert('عبي اسم المناسبة والتاريخ');
+  await supabase.from('events').insert({title, event_date});
+  document.getElementById('event-title').value='';
+  document.getElementById('event-date').value='';
+  loadEvents();
+};
+
+// ================= الصور =================
+async function loadPhotos(){
+  const {data} = await supabase.from('photos').select('*').order('created_at',{ascending:false});
+  const grid = document.getElementById('photo-grid');
+  const empty = document.getElementById('photo-empty');
+  if(!data || data.length===0){ grid.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display='none';
+  grid.innerHTML = data.map(p => `<img src="${p.image_url}" alt="${escapeHtml(p.caption||'صورة نشاط')}" loading="lazy">`).join('');
+}
+window.addPhoto = async function(){
+  const fileInput = document.getElementById('photo-file');
+  const caption = document.getElementById('photo-caption').value.trim();
+  const status = document.getElementById('photo-status');
+  const file = fileInput.files[0];
+  if(!file) return alert('اختاري صورة أولاً');
+  status.textContent = 'جاري الرفع...';
+  const fileName = `${Date.now()}-${file.name}`;
+  const {error: upErr} = await supabase.storage.from('nashat-photos').upload(fileName, file);
+  if(upErr){ status.textContent = 'حدث خطأ في الرفع'; return; }
+  const {data: urlData} = supabase.storage.from('nashat-photos').getPublicUrl(fileName);
+  await supabase.from('photos').insert({image_url: urlData.publicUrl, caption});
+  status.textContent = 'تم الرفع بنجاح';
+  fileInput.value=''; document.getElementById('photo-caption').value='';
+  loadPhotos();
+};
+
+// ================= الحائط =================
+async function loadWall(){
+  const {data} = await supabase.from('wall_posts').select('*').order('created_at',{ascending:false});
+  const grid = document.getElementById('wall-grid');
+  const empty = document.getElementById('wall-empty');
+  if(!data || data.length===0){ grid.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display='none';
+  const colorClass = {purple:'wc-purple', maroon:'wc-maroon', orange:'wc-orange', teal:'wc-teal'};
+  grid.innerHTML = data.map(w => `
+    <div class="wall-card ${colorClass[w.color]||'wc-purple'}">
+      <b>${escapeHtml(w.author_name)}</b>
+      ${escapeHtml(w.message)}
+    </div>`).join('');
+}
+window.addWall = async function(){
+  const author_name = document.getElementById('wall-author').value.trim();
+  const message = document.getElementById('wall-msg').value.trim();
+  const color = document.getElementById('wall-color').value;
+  if(!author_name || !message) return alert('اكتبي اسمك ورسالتك');
+  await supabase.from('wall_posts').insert({author_name, message, color});
+  document.getElementById('wall-author').value='';
+  document.getElementById('wall-msg').value='';
+  loadWall();
+};
+
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+loadAnnouncements();
+loadPlan();
+loadEvents();
+loadPhotos();
+loadWall();
+</script>
+
+</body>
+</html>
