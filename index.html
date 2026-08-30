@@ -4,7 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>منصة النشاط المدرسي</title>
+<meta name="description" content="منصة النشاط المدرسي لمدرسة الموهوبين التقنية الثانوية بنات — الإعلانات والخطة الأسبوعية والمناسبات وصور الأنشطة والحائط الإلكتروني.">
+<meta name="theme-color" content="#5B4FCF">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ar_SA">
+<meta property="og:site_name" content="منصة النشاط المدرسي">
+<meta property="og:title" content="منصة النشاط المدرسي">
+<meta property="og:description" content="تابعي آخر الإعلانات، الخطة الأسبوعية، المناسبات القادمة، وصور الأنشطة أولاً بأول.">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%235B4FCF'/%3E%3Cg fill='%23fff'%3E%3Crect x='26' y='10' width='12' height='12' rx='3'/%3E%3Crect x='12' y='24' width='12' height='12' rx='3'/%3E%3Crect x='40' y='24' width='12' height='12' rx='3'/%3E%3Crect x='0' y='38' width='12' height='12' rx='3'/%3E%3Crect x='52' y='38' width='12' height='12' rx='3'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -14,7 +24,7 @@
     --bg: #F5F3FC;
     --white: #FFFFFF;
     --ink: #2A2065;
-    --muted: #7A74A8;
+    --muted: #6E6790;
     --maroon: #A31545;
     --maroon-bg: #FBE7EE;
     --orange: #D97A3D;
@@ -120,6 +130,17 @@
     padding:32px 20px; text-align:center; color:var(--muted);
     box-shadow:var(--shadow); font-size:0.9rem;
   }
+  /* an outage must not look like "no content yet" */
+  .load-error{
+    background:var(--maroon-bg); border-radius:var(--radius);
+    padding:24px 20px; text-align:center; color:var(--maroon);
+    font-size:0.9rem; font-weight:500;
+  }
+  .load-error button{
+    margin-top:10px; border:1.5px solid var(--maroon); background:transparent;
+    color:var(--maroon); padding:6px 16px; border-radius:999px;
+    font-family:'Tajawal'; font-weight:700; font-size:0.8rem; cursor:pointer;
+  }
 
   /* ===== school info ===== */
   .info-grid{
@@ -138,6 +159,7 @@
     background:var(--white); border-radius:var(--radius);
     padding:20px; box-shadow:var(--shadow); margin-bottom:12px;
     border-inline-start:4px solid var(--purple);
+    position:relative;
   }
   .ann-card h3{margin:0 0 6px; font-size:1.02rem; color:var(--purple-deep);}
   .ann-card p{margin:0; color:var(--muted); font-size:0.9rem;}
@@ -148,12 +170,14 @@
     background:var(--white); border-radius:var(--radius);
     box-shadow:var(--shadow); padding:18px 20px; margin-bottom:12px;
     display:flex; gap:16px; align-items:flex-start;
+    position:relative;
   }
   .plan-week{
     background:var(--purple-soft); color:var(--purple-deep);
     font-family:'Cairo'; font-weight:800; font-size:0.85rem;
     padding:6px 12px; border-radius:10px; white-space:nowrap;
   }
+  .plan-body{min-width:0;}
   .plan-body h3{margin:0 0 4px; font-size:0.98rem;}
   .plan-body .range{font-size:0.78rem; color:var(--muted); margin-bottom:6px;}
   .plan-body p{margin:0; font-size:0.88rem; color:var(--muted);}
@@ -163,12 +187,14 @@
     display:flex; align-items:center; gap:16px;
     background:var(--white); border-radius:14px;
     padding:14px 18px; margin-bottom:10px; box-shadow:var(--shadow);
+    position:relative;
   }
   .event-days{
     font-family:'Cairo'; font-weight:800; font-size:1.3rem;
     color:var(--purple); min-width:64px; text-align:center;
   }
   .event-days span{display:block; font-size:0.65rem; font-weight:500; color:var(--muted);}
+  .event-info{min-width:0;}
   .event-info h3{margin:0; font-size:0.95rem;}
   .event-info .d{font-size:0.78rem; color:var(--muted);}
 
@@ -177,9 +203,11 @@
     display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
     gap:12px;
   }
+  .photo-item{position:relative;}
   .photo-grid img{
     width:100%; aspect-ratio:1; object-fit:cover;
-    border-radius:14px; box-shadow:var(--shadow);
+    border-radius:14px; box-shadow:var(--shadow); display:block;
+    background:var(--purple-soft);
   }
 
   /* ===== wall ===== */
@@ -189,13 +217,19 @@
   }
   .wall-card{
     border-radius:16px; padding:16px; box-shadow:var(--shadow);
-    font-size:0.88rem;
+    font-size:0.88rem; position:relative;
   }
   .wall-card b{display:block; margin-bottom:6px; font-family:'Cairo';}
   .wc-purple{background:var(--purple-soft); color:var(--purple-deep);}
   .wc-maroon{background:var(--maroon-bg); color:var(--maroon);}
   .wc-orange{background:var(--orange-bg); color:var(--orange);}
   .wc-teal{background:var(--teal-bg); color:var(--teal);}
+
+  /* a pasted link must never be able to stretch the page (F8) */
+  .wall-card, .ann-card h3, .ann-card p, .plan-body h3, .plan-body p,
+  .plan-body .range, .event-info h3{
+    overflow-wrap:anywhere; word-break:break-word;
+  }
 
   .wall-form{
     background:var(--white); border-radius:var(--radius);
@@ -205,6 +239,7 @@
   input, textarea, select{
     font-family:'Tajawal'; border:1.5px solid #E1DCF5; border-radius:10px;
     padding:10px 12px; font-size:0.88rem; background:#FBFAFF;
+    color:var(--ink); max-width:100%;
   }
   input:focus, textarea:focus, select:focus{outline:2px solid var(--purple); border-color:transparent;}
   .wall-form input[name="author"]{flex:1; min-width:140px;}
@@ -216,6 +251,19 @@
     font-weight:700; font-size:0.88rem; cursor:pointer;
   }
   .btn:hover{background:var(--purple-deep);}
+  .btn[disabled]{opacity:0.55; cursor:progress;}
+  .counter{font-size:0.72rem; color:var(--muted); align-self:center;}
+
+  /* ===== delete control (admin only) ===== */
+  .del-btn{
+    position:absolute; inset-inline-end:12px; top:12px;
+    border:none; background:var(--maroon-bg); color:var(--maroon);
+    width:28px; height:28px; border-radius:50%;
+    font-family:'Tajawal'; font-weight:700; font-size:0.9rem;
+    cursor:pointer; line-height:1; padding:0;
+  }
+  .del-btn:hover{background:var(--maroon); color:#fff;}
+  .photo-item .del-btn{top:8px; inset-inline-end:8px;}
 
   /* ===== admin panel ===== */
   .panel{
@@ -223,8 +271,16 @@
     box-shadow:var(--shadow); padding:20px; margin-bottom:18px;
     display:none; flex-direction:column; gap:10px;
   }
-  .panel.open{display:flex;}
   .panel label{font-size:0.8rem; font-weight:700; color:var(--purple-deep);}
+
+  /* --- the actual admin gate (F1): hidden until signed in --- */
+  .admin-only{display:none !important;}
+  body.is-admin .admin-only{display:inline-flex !important;}
+  body.is-admin .panel.open{display:flex;}
+
+  .form-msg{font-size:0.8rem; margin:0;}
+  .form-msg.err{color:var(--maroon); font-weight:700;}
+  .form-msg.ok{color:var(--teal); font-weight:700;}
 
   /* ===== modal (login) ===== */
   .modal-bg{
@@ -238,11 +294,17 @@
     max-width:320px; width:100%; box-shadow:var(--shadow);
   }
   .modal h3{margin:0 0 12px;}
+  .modal label{display:block; font-size:0.8rem; font-weight:700; color:var(--purple-deep); margin-bottom:4px;}
   .modal input{width:100%; margin-bottom:12px;}
 
   footer{
     text-align:center; color:var(--muted); font-size:0.8rem;
     padding:30px 20px 40px;
+  }
+
+  .visually-hidden{
+    position:absolute; width:1px; height:1px; overflow:hidden;
+    clip:rect(0 0 0 0); white-space:nowrap;
   }
 
   @media (max-width:640px){
@@ -267,14 +329,14 @@
       </span>
       <span class="brand-name">منصة النشاط المدرسي</span>
     </div>
-    <nav class="links">
+    <nav class="links" aria-label="أقسام الصفحة">
       <a href="#announcements">الإعلانات</a>
       <a href="#plan">الخطة الأسبوعية</a>
       <a href="#events">المناسبات</a>
       <a href="#photos">الصور</a>
       <a href="#wall">الحائط</a>
     </nav>
-    <button class="admin-btn" id="adminToggle">دخول رائدة النشاط</button>
+    <button class="admin-btn" id="adminToggle" type="button">دخول رائدة النشاط</button>
   </div>
 </header>
 
@@ -296,7 +358,7 @@
 <!-- ================= بيانات المدرسة ================= -->
 <section id="school-info">
   <div class="sec-head">
-    <div class="sec-icon" style="background:var(--purple-deep)">00</div>
+    <div class="sec-icon" style="background:var(--purple-deep)" aria-hidden="true">00</div>
     <div>
       <h2>بيانات المدرسة</h2>
       <div class="sub">التعريف بالمدرسة والإدارة التعليمية</div>
@@ -325,240 +387,420 @@
 <!-- ================= الإعلانات ================= -->
 <section id="announcements">
   <div class="sec-head">
-    <div class="sec-icon" style="background:var(--purple)">01</div>
+    <div class="sec-icon" style="background:var(--purple)" aria-hidden="true">01</div>
     <div>
       <h2>الإعلانات</h2>
       <div class="sub">آخر إعلانات النشاط للطالبات وأولياء الأمور</div>
     </div>
-    <button class="add-btn admin-only" data-panel="panel-ann">+ إضافة إعلان</button>
+    <button class="add-btn admin-only" type="button" data-panel="panel-ann" aria-expanded="false" aria-controls="panel-ann">+ إضافة إعلان</button>
   </div>
 
-  <div class="panel" id="panel-ann">
-    <label>عنوان الإعلان</label>
-    <input type="text" id="ann-title" placeholder="مثال: بدء التسجيل في برنامج الفن السابع">
-    <label>تفاصيل الإعلان</label>
-    <textarea id="ann-body" placeholder="اكتبي التفاصيل هنا..."></textarea>
-    <button class="btn" onclick="addAnnouncement()">نشر الإعلان</button>
-  </div>
+  <form class="panel" id="panel-ann" novalidate>
+    <label for="ann-title">عنوان الإعلان</label>
+    <input type="text" id="ann-title" name="title" maxlength="120" required placeholder="مثال: بدء التسجيل في برنامج الفن السابع">
+    <label for="ann-body">تفاصيل الإعلان</label>
+    <textarea id="ann-body" name="body" maxlength="1000" placeholder="اكتبي التفاصيل هنا..."></textarea>
+    <button class="btn" type="submit">نشر الإعلان</button>
+    <p class="form-msg" id="ann-msg" role="status"></p>
+  </form>
 
-  <div id="ann-list"><div class="empty">لا يوجد إعلان بعد، سيظهر هنا فور نشره</div></div>
+  <div id="ann-list"><div class="empty">جاري التحميل…</div></div>
 </section>
 
 <!-- ================= الخطة الأسبوعية ================= -->
 <section id="plan">
   <div class="sec-head">
-    <div class="sec-icon" style="background:var(--navy)">02</div>
+    <div class="sec-icon" style="background:var(--navy)" aria-hidden="true">02</div>
     <div>
       <h2>الخطة الأسبوعية</h2>
       <div class="sub">توزيع برامج النشاط على أسابيع الفصل الدراسي</div>
     </div>
-    <button class="add-btn admin-only" data-panel="panel-plan">+ إضافة أسبوع</button>
+    <button class="add-btn admin-only" type="button" data-panel="panel-plan" aria-expanded="false" aria-controls="panel-plan">+ إضافة أسبوع</button>
   </div>
 
-  <div class="panel" id="panel-plan">
-    <label>الفصل الدراسي</label>
-    <input type="text" id="plan-term" placeholder="مثال: الفصل الأول">
-    <label>رقم الأسبوع</label>
-    <input type="number" id="plan-week" placeholder="مثال: 3">
-    <label>تاريخ الأسبوع</label>
-    <input type="text" id="plan-range" placeholder="مثال: ٢٤ ربيع الأول – ٢٨ ربيع الأول">
-    <label>عنوان البرنامج</label>
-    <input type="text" id="plan-title" placeholder="مثال: برنامج تطبيقات STEM">
-    <label>تفاصيل إضافية</label>
-    <textarea id="plan-details" placeholder="اختياري"></textarea>
-    <button class="btn" onclick="addPlan()">إضافة للخطة</button>
-  </div>
+  <form class="panel" id="panel-plan" novalidate>
+    <label for="plan-term">الفصل الدراسي</label>
+    <select id="plan-term" name="term" required>
+      <option value="">اختاري الفصل</option>
+      <option value="الفصل الأول">الفصل الأول</option>
+      <option value="الفصل الثاني">الفصل الثاني</option>
+      <option value="الفصل الثالث">الفصل الثالث</option>
+    </select>
+    <label for="plan-week">رقم الأسبوع</label>
+    <input type="number" id="plan-week" name="week_number" min="1" max="20" required placeholder="مثال: 3">
+    <label for="plan-range">تاريخ الأسبوع</label>
+    <input type="text" id="plan-range" name="date_range" maxlength="80" placeholder="مثال: ٢٤ ربيع الأول – ٢٨ ربيع الأول">
+    <label for="plan-title">عنوان البرنامج</label>
+    <input type="text" id="plan-title" name="title" maxlength="120" required placeholder="مثال: برنامج تطبيقات STEM">
+    <label for="plan-details">تفاصيل إضافية</label>
+    <textarea id="plan-details" name="details" maxlength="600" placeholder="اختياري"></textarea>
+    <button class="btn" type="submit">إضافة للخطة</button>
+    <p class="form-msg" id="plan-msg" role="status"></p>
+  </form>
 
-  <div id="plan-list"><div class="empty">لم تُضَف أي خطة أسبوعية بعد</div></div>
+  <div id="plan-list"><div class="empty">جاري التحميل…</div></div>
 </section>
 
 <!-- ================= المناسبات ================= -->
 <section id="events">
   <div class="sec-head">
-    <div class="sec-icon" style="background:var(--teal)">03</div>
+    <div class="sec-icon" style="background:var(--teal)" aria-hidden="true">03</div>
     <div>
       <h2>المناسبات العالمية</h2>
       <div class="sub">الأيام والمناسبات القادمة مرتبة زمنيًا</div>
     </div>
-    <button class="add-btn admin-only" data-panel="panel-event">+ إضافة مناسبة</button>
+    <button class="add-btn admin-only" type="button" data-panel="panel-event" aria-expanded="false" aria-controls="panel-event">+ إضافة مناسبة</button>
   </div>
 
-  <div class="panel" id="panel-event">
-    <label>اسم المناسبة</label>
-    <input type="text" id="event-title" placeholder="مثال: اليوم العالمي للطفل">
-    <label>تاريخ المناسبة</label>
-    <input type="date" id="event-date">
-    <button class="btn" onclick="addEvent()">إضافة المناسبة</button>
-  </div>
+  <form class="panel" id="panel-event" novalidate>
+    <label for="event-title">اسم المناسبة</label>
+    <input type="text" id="event-title" name="title" maxlength="120" required placeholder="مثال: اليوم العالمي للطفل">
+    <label for="event-date">تاريخ المناسبة</label>
+    <input type="date" id="event-date" name="event_date" required>
+    <button class="btn" type="submit">إضافة المناسبة</button>
+    <p class="form-msg" id="event-msg" role="status"></p>
+  </form>
 
-  <div id="event-list"><div class="empty">لا توجد مناسبات قادمة حاليًا</div></div>
+  <div id="event-list"><div class="empty">جاري التحميل…</div></div>
 </section>
 
 <!-- ================= الصور ================= -->
 <section id="photos">
   <div class="sec-head">
-    <div class="sec-icon" style="background:var(--orange)">04</div>
+    <div class="sec-icon" style="background:var(--orange)" aria-hidden="true">04</div>
     <div>
       <h2>صور النشاط</h2>
       <div class="sub">لحظات من فعاليات وبرامج النشاط</div>
     </div>
-    <button class="add-btn admin-only" data-panel="panel-photo">+ رفع صورة</button>
+    <button class="add-btn admin-only" type="button" data-panel="panel-photo" aria-expanded="false" aria-controls="panel-photo">+ رفع صورة</button>
   </div>
 
-  <div class="panel" id="panel-photo">
-    <label>اختاري صورة</label>
-    <input type="file" id="photo-file" accept="image/*">
-    <label>وصف الصورة (اختياري)</label>
-    <input type="text" id="photo-caption" placeholder="مثال: فعالية اليوم الوطني">
-    <button class="btn" onclick="addPhoto()">رفع الصورة</button>
-    <span id="photo-status" style="font-size:0.8rem;color:var(--muted)"></span>
-  </div>
+  <form class="panel" id="panel-photo" novalidate>
+    <label for="photo-file">اختاري صورة</label>
+    <input type="file" id="photo-file" name="file" accept="image/*" required>
+    <label for="photo-caption">وصف الصورة (اختياري)</label>
+    <input type="text" id="photo-caption" name="caption" maxlength="120" placeholder="مثال: فعالية اليوم الوطني">
+    <button class="btn" type="submit">رفع الصورة</button>
+    <p class="form-msg" id="photo-status" role="status"></p>
+  </form>
 
   <div class="photo-grid" id="photo-grid"></div>
-  <div id="photo-empty" class="empty">لا توجد صور بعد</div>
+  <div id="photo-empty" class="empty">جاري التحميل…</div>
 </section>
 
 <!-- ================= الحائط الإلكتروني ================= -->
 <section id="wall">
   <div class="sec-head">
-    <div class="sec-icon" style="background:var(--maroon)">05</div>
+    <div class="sec-icon" style="background:var(--maroon)" aria-hidden="true">05</div>
     <div>
       <h2>الحائط الإلكتروني</h2>
       <div class="sub">مساحة للرسائل والتهاني والإنجازات، مفتوحة للجميع</div>
     </div>
   </div>
 
-  <div class="wall-form" style="margin-bottom:20px;">
-    <input type="text" name="author" id="wall-author" placeholder="اسمك">
-    <select id="wall-color">
+  <form class="wall-form" id="wall-form" style="margin-bottom:20px;" novalidate>
+    <label class="visually-hidden" for="wall-author">اسمك</label>
+    <input type="text" name="author" id="wall-author" maxlength="40" required placeholder="اسمك">
+    <label class="visually-hidden" for="wall-color">لون البطاقة</label>
+    <select id="wall-color" name="color">
       <option value="purple">بنفسجي</option>
       <option value="maroon">وردي</option>
       <option value="orange">برتقالي</option>
       <option value="teal">فيروزي</option>
     </select>
-    <textarea id="wall-msg" placeholder="اكتبي رسالتك أو تهنئتك هنا..."></textarea>
-    <button class="btn" onclick="addWall()">نشر على الحائط</button>
-  </div>
+    <label class="visually-hidden" for="wall-msg">رسالتك</label>
+    <textarea id="wall-msg" name="message" maxlength="280" required placeholder="اكتبي رسالتك أو تهنئتك هنا..."></textarea>
+    <button class="btn" type="submit">نشر على الحائط</button>
+    <span class="counter" id="wall-count" aria-live="polite">0 / 280</span>
+    <p class="form-msg" id="wall-msg-status" role="status" style="width:100%"></p>
+  </form>
 
   <div class="wall-grid" id="wall-grid"></div>
-  <div id="wall-empty" class="empty">لا توجد رسائل بعد، كوني أول من يكتب!</div>
+  <div id="wall-empty" class="empty">جاري التحميل…</div>
 </section>
 
 <footer>منصة النشاط المدرسي — تصميم خاص بالمدرسة</footer>
 
 <!-- ===== login modal ===== -->
 <div class="modal-bg" id="loginModal">
-  <div class="modal">
-    <h3>دخول رائدة النشاط</h3>
-    <input type="password" id="admin-pass" placeholder="كلمة المرور">
-    <button class="btn" style="width:100%" onclick="checkAdmin()">دخول</button>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+    <h3 id="loginTitle">دخول رائدة النشاط</h3>
+    <form id="login-form" novalidate>
+      <label for="admin-email">البريد الإلكتروني</label>
+      <input type="email" id="admin-email" name="email" autocomplete="username" required>
+      <label for="admin-pass">كلمة المرور</label>
+      <input type="password" id="admin-pass" name="password" autocomplete="current-password" required>
+      <button class="btn" style="width:100%" type="submit">دخول</button>
+      <p class="form-msg" id="login-msg" role="status"></p>
+    </form>
   </div>
 </div>
 
 <script type="module">
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.112.4';
 
 const SUPABASE_URL = 'https://spefcltrdvkgzikrmayx.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_nZd0mw9G8Y6kHIL923Hhzw_ZyKT7ju-';
+const PHOTO_BUCKET = 'nashat-photos';
+const PUBLIC_PREFIX = `${SUPABASE_URL}/storage/v1/object/public/${PHOTO_BUCKET}/`;
+
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// -------- كلمة مرور رائدة النشاط (غيّريها هنا) --------
-const ADMIN_PASSWORD = 'نشاط2026';
+/* =========================================================
+   دخول رائدة النشاط — عبر Supabase Auth.
+   لا توجد كلمة مرور مكتوبة في هذا الملف: التحقق يتم في الخادم،
+   وصلاحية الكتابة تفرضها سياسات RLS (راجعي schema.sql).
+   ========================================================= */
+const $ = (id) => document.getElementById(id);
+const modal = $('loginModal');
+const adminToggle = $('adminToggle');
+let lastFocus = null;
 
-window.checkAdmin = function(){
-  const val = document.getElementById('admin-pass').value;
-  if(val === ADMIN_PASSWORD){
-    sessionStorage.setItem('isAdmin','1');
-    document.getElementById('loginModal').classList.remove('open');
-    showAdminUI();
-  } else {
-    alert('كلمة المرور غير صحيحة');
-  }
-};
-
-function showAdminUI(){
-  document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'inline-flex');
-  document.getElementById('adminToggle').textContent = 'خروج رائدة النشاط';
+function setAdmin(on){
+  document.body.classList.toggle('is-admin', on);
+  adminToggle.textContent = on ? 'خروج رائدة النشاط' : 'دخول رائدة النشاط';
+  if(!on) document.querySelectorAll('.panel.open').forEach(closePanel);
+  renderAll();
 }
 
-document.getElementById('adminToggle').addEventListener('click', () => {
-  if(sessionStorage.getItem('isAdmin')){
-    sessionStorage.removeItem('isAdmin');
-    location.reload();
+function openModal(){
+  lastFocus = document.activeElement;
+  modal.classList.add('open');
+  $('login-msg').textContent = '';
+  $('admin-email').focus();
+}
+function closeModal(){
+  modal.classList.remove('open');
+  $('login-form').reset();
+  if(lastFocus) lastFocus.focus();
+}
+
+adminToggle.addEventListener('click', async () => {
+  if(document.body.classList.contains('is-admin')){
+    await supabase.auth.signOut();
+    setAdmin(false);
   } else {
-    document.getElementById('loginModal').classList.add('open');
+    openModal();
   }
 });
 
-document.querySelectorAll('.add-btn').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    const p = document.getElementById(btn.dataset.panel);
-    p.classList.toggle('open');
+modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
+document.addEventListener('keydown', (e) => {
+  if(e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+});
+
+$('login-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const msg = $('login-msg');
+  const email = $('admin-email').value.trim();
+  const password = $('admin-pass').value;
+  if(!email || !password){ msg.className='form-msg err'; msg.textContent='أدخلي البريد وكلمة المرور'; return; }
+  const btn = e.target.querySelector('button[type="submit"]');
+  btn.disabled = true; msg.className='form-msg'; msg.textContent='جاري التحقق...';
+  const {error} = await supabase.auth.signInWithPassword({email, password});
+  btn.disabled = false;
+  if(error){
+    msg.className = 'form-msg err';
+    msg.textContent = 'بيانات الدخول غير صحيحة';
+    return;
+  }
+  closeModal();
+  setAdmin(true);
+});
+
+supabase.auth.onAuthStateChange((_event, session) => {
+  document.body.classList.toggle('is-admin', !!session);
+  adminToggle.textContent = session ? 'خروج رائدة النشاط' : 'دخول رائدة النشاط';
+});
+
+/* ===== admin panels ===== */
+function closePanel(p){
+  p.classList.remove('open');
+  const btn = document.querySelector(`[data-panel="${p.id}"]`);
+  if(btn) btn.setAttribute('aria-expanded','false');
+}
+document.querySelectorAll('.add-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const p = $(btn.dataset.panel);
+    const willOpen = !p.classList.contains('open');
+    p.classList.toggle('open', willOpen);
+    btn.setAttribute('aria-expanded', String(willOpen));
+    if(willOpen) p.querySelector('input, select, textarea')?.focus();
   });
 });
 
-if(sessionStorage.getItem('isAdmin')) showAdminUI();
+/* ===== shared helpers ===== */
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
 
-// ================= الإعلانات =================
+// صور المعرض تُقبل فقط من مخزن Supabase الخاص بالمدرسة
+function safeImageUrl(url){
+  const s = String(url || '');
+  return s.startsWith(PUBLIC_PREFIX) ? escapeHtml(s) : '';
+}
+
+// تواريخ 'YYYY-MM-DD' تُقرأ بالتوقيت المحلي لا بتوقيت UTC
+function parseLocalDate(value){
+  const [y, m, d] = String(value).split('-').map(Number);
+  return new Date(y, (m || 1) - 1, d || 1);
+}
+
+function setMsg(el, text, kind){
+  el.className = 'form-msg' + (kind ? ' ' + kind : '');
+  el.textContent = text;
+}
+
+// يمنع الإرسال المزدوج عند النقر السريع
+async function withBusy(form, label, fn){
+  const btn = form.querySelector('button[type="submit"]');
+  if(btn.disabled) return;
+  const original = btn.textContent;
+  btn.disabled = true; btn.textContent = label;
+  try { await fn(); }
+  finally { btn.disabled = false; btn.textContent = original; }
+}
+
+// انقطاع الشبكة قد يرمي استثناءً بدل أن يعيد error، وقد لا يعود الطلب إطلاقًا.
+// نلتقط الحالات الثلاث حتى لا تبقى الصفحة معلّقة على "جاري التحميل".
+const QUERY_TIMEOUT_MS = 12000;
+
+async function runQuery(build){
+  try {
+    const result = await Promise.race([
+      build(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), QUERY_TIMEOUT_MS))
+    ]);
+    if(result.error) return {data:null, failed:true};
+    return {data: result.data || [], failed:false};
+  } catch {
+    return {data:null, failed:true};
+  }
+}
+
+function errorBlock(retryFn){
+  const div = document.createElement('div');
+  div.className = 'load-error';
+  div.innerHTML = '<div>تعذّر تحميل هذا القسم. تحققي من الاتصال بالإنترنت.</div>';
+  const b = document.createElement('button');
+  b.type = 'button'; b.textContent = 'إعادة المحاولة';
+  b.addEventListener('click', retryFn);
+  div.appendChild(b);
+  return div;
+}
+
+function delButton(table, id, extra){
+  if(!document.body.classList.contains('is-admin')) return '';
+  const payload = extra ? ` data-extra="${escapeHtml(extra)}"` : '';
+  return `<button class="del-btn admin-only" type="button" data-del="${escapeHtml(table)}" data-id="${escapeHtml(id)}"${payload} aria-label="حذف">×</button>`;
+}
+
+async function removeRow(table, id, extra){
+  if(!confirm('هل تريدين حذف هذا العنصر نهائيًا؟')) return;
+  if(table === 'photos' && extra){
+    await supabase.storage.from(PHOTO_BUCKET).remove([extra]);
+  }
+  const {error} = await supabase.from(table).delete().eq('id', id);
+  if(error){ alert('تعذّر الحذف. تأكدي من تسجيل الدخول.'); return; }
+  renderAll();
+}
+
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-del]');
+  if(b) removeRow(b.dataset.del, b.dataset.id, b.dataset.extra);
+});
+
+/* ================= الإعلانات ================= */
 async function loadAnnouncements(){
-  const {data} = await supabase.from('announcements').select('*').order('created_at',{ascending:false});
-  const list = document.getElementById('ann-list');
-  if(!data || data.length===0){ list.innerHTML = '<div class="empty">لا يوجد إعلان بعد، سيظهر هنا فور نشره</div>'; return; }
+  const list = $('ann-list');
+  const {data, failed} = await runQuery(() =>
+    supabase.from('announcements').select('*').order('created_at',{ascending:false}));
+  if(failed){ list.replaceChildren(errorBlock(loadAnnouncements)); return; }
+  if(data.length === 0){
+    list.innerHTML = '<div class="empty">لا يوجد إعلان بعد، سيظهر هنا فور نشره</div>';
+    return;
+  }
   list.innerHTML = data.map(a => `
     <div class="ann-card">
+      ${delButton('announcements', a.id)}
       <h3>${escapeHtml(a.title)}</h3>
-      <p>${escapeHtml(a.body||'')}</p>
-      <time>${new Date(a.created_at).toLocaleDateString('ar-SA')}</time>
+      <p>${escapeHtml(a.body || '')}</p>
+      <time datetime="${escapeHtml(a.created_at)}">${new Date(a.created_at).toLocaleDateString('ar-SA')}</time>
     </div>`).join('');
 }
-window.addAnnouncement = async function(){
-  const title = document.getElementById('ann-title').value.trim();
-  const body = document.getElementById('ann-body').value.trim();
-  if(!title) return alert('اكتبي عنوان الإعلان');
-  await supabase.from('announcements').insert({title, body});
-  document.getElementById('ann-title').value='';
-  document.getElementById('ann-body').value='';
-  loadAnnouncements();
-};
 
-// ================= الخطة الأسبوعية =================
+$('panel-ann').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const msg = $('ann-msg');
+  const title = $('ann-title').value.trim();
+  const body = $('ann-body').value.trim();
+  if(!title){ setMsg(msg,'اكتبي عنوان الإعلان','err'); return; }
+  withBusy(e.target, 'جاري النشر...', async () => {
+    const {error} = await supabase.from('announcements').insert({title, body});
+    if(error){ setMsg(msg,'لم يتم النشر. تأكدي من تسجيل الدخول ثم أعيدي المحاولة.','err'); return; }
+    $('ann-title').value = ''; $('ann-body').value = '';
+    setMsg(msg,'تم نشر الإعلان','ok');
+    loadAnnouncements();
+  });
+});
+
+/* ================= الخطة الأسبوعية ================= */
 async function loadPlan(){
-  const {data} = await supabase.from('weekly_plan').select('*').order('week_number',{ascending:true});
-  const list = document.getElementById('plan-list');
-  if(!data || data.length===0){ list.innerHTML = '<div class="empty">لم تُضَف أي خطة أسبوعية بعد</div>'; return; }
+  const list = $('plan-list');
+  const {data, failed} = await runQuery(() => supabase.from('weekly_plan').select('*')
+    .order('term',{ascending:true}).order('week_number',{ascending:true}));
+  if(failed){ list.replaceChildren(errorBlock(loadPlan)); return; }
+  if(data.length === 0){
+    list.innerHTML = '<div class="empty">لم تُضَف أي خطة أسبوعية بعد</div>';
+    return;
+  }
   list.innerHTML = data.map(p => `
     <div class="plan-item">
-      <div class="plan-week">${escapeHtml(p.term)}<br>أسبوع ${p.week_number}</div>
+      ${delButton('weekly_plan', p.id)}
+      <div class="plan-week">${escapeHtml(p.term)}<br>أسبوع ${escapeHtml(p.week_number)}</div>
       <div class="plan-body">
         <h3>${escapeHtml(p.title)}</h3>
-        <div class="range">${escapeHtml(p.date_range||'')}</div>
-        <p>${escapeHtml(p.details||'')}</p>
+        <div class="range">${escapeHtml(p.date_range || '')}</div>
+        <p>${escapeHtml(p.details || '')}</p>
       </div>
     </div>`).join('');
 }
-window.addPlan = async function(){
-  const term = document.getElementById('plan-term').value.trim();
-  const week_number = parseInt(document.getElementById('plan-week').value);
-  const date_range = document.getElementById('plan-range').value.trim();
-  const title = document.getElementById('plan-title').value.trim();
-  const details = document.getElementById('plan-details').value.trim();
-  if(!term || !week_number || !title) return alert('عبي الفصل، رقم الأسبوع، وعنوان البرنامج');
-  await supabase.from('weekly_plan').insert({term, week_number, date_range, title, details});
-  ['plan-term','plan-week','plan-range','plan-title','plan-details'].forEach(id=>document.getElementById(id).value='');
-  loadPlan();
-};
 
-// ================= المناسبات =================
+$('panel-plan').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const msg = $('plan-msg');
+  const term = $('plan-term').value;
+  const week_number = parseInt($('plan-week').value, 10);
+  const date_range = $('plan-range').value.trim();
+  const title = $('plan-title').value.trim();
+  const details = $('plan-details').value.trim();
+  if(!term || !week_number || !title){ setMsg(msg,'عبي الفصل، رقم الأسبوع، وعنوان البرنامج','err'); return; }
+  withBusy(e.target, 'جاري الإضافة...', async () => {
+    const {error} = await supabase.from('weekly_plan').insert({term, week_number, date_range, title, details});
+    if(error){ setMsg(msg,'لم تتم الإضافة. تأكدي من تسجيل الدخول ثم أعيدي المحاولة.','err'); return; }
+    ['plan-week','plan-range','plan-title','plan-details'].forEach(id => { $(id).value = ''; });
+    setMsg(msg,'تمت الإضافة للخطة','ok');
+    loadPlan();
+  });
+});
+
+/* ================= المناسبات ================= */
 async function loadEvents(){
-  const {data} = await supabase.from('events').select('*').order('event_date',{ascending:true});
-  const list = document.getElementById('event-list');
+  const list = $('event-list');
+  const {data, failed} = await runQuery(() =>
+    supabase.from('events').select('*').order('event_date',{ascending:true}));
+  if(failed){ list.replaceChildren(errorBlock(loadEvents)); return; }
   const today = new Date(); today.setHours(0,0,0,0);
-  const upcoming = (data||[]).filter(e => new Date(e.event_date) >= today);
-  if(upcoming.length===0){ list.innerHTML = '<div class="empty">لا توجد مناسبات قادمة حاليًا</div>'; return; }
+  const upcoming = data.filter(e => parseLocalDate(e.event_date) >= today);
+  if(upcoming.length === 0){
+    list.innerHTML = '<div class="empty">لا توجد مناسبات قادمة حاليًا</div>';
+    return;
+  }
   list.innerHTML = upcoming.map(e => {
-    const d = new Date(e.event_date);
+    const d = parseLocalDate(e.event_date);
     const days = Math.round((d - today) / 86400000);
     return `<div class="event-row">
+      ${delButton('events', e.id)}
       <div class="event-days">${days}<span>يوم متبقي</span></div>
       <div class="event-info">
         <h3>${escapeHtml(e.title)}</h3>
@@ -567,76 +809,167 @@ async function loadEvents(){
     </div>`;
   }).join('');
 }
-window.addEvent = async function(){
-  const title = document.getElementById('event-title').value.trim();
-  const event_date = document.getElementById('event-date').value;
-  if(!title || !event_date) return alert('عبي اسم المناسبة والتاريخ');
-  await supabase.from('events').insert({title, event_date});
-  document.getElementById('event-title').value='';
-  document.getElementById('event-date').value='';
-  loadEvents();
-};
 
-// ================= الصور =================
-async function loadPhotos(){
-  const {data} = await supabase.from('photos').select('*').order('created_at',{ascending:false});
-  const grid = document.getElementById('photo-grid');
-  const empty = document.getElementById('photo-empty');
-  if(!data || data.length===0){ grid.innerHTML=''; empty.style.display='block'; return; }
-  empty.style.display='none';
-  grid.innerHTML = data.map(p => `<img src="${p.image_url}" alt="${escapeHtml(p.caption||'صورة نشاط')}" loading="lazy">`).join('');
+$('panel-event').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const msg = $('event-msg');
+  const title = $('event-title').value.trim();
+  const event_date = $('event-date').value;
+  if(!title || !event_date){ setMsg(msg,'عبي اسم المناسبة والتاريخ','err'); return; }
+  withBusy(e.target, 'جاري الإضافة...', async () => {
+    const {error} = await supabase.from('events').insert({title, event_date});
+    if(error){ setMsg(msg,'لم تتم الإضافة. تأكدي من تسجيل الدخول ثم أعيدي المحاولة.','err'); return; }
+    $('event-title').value = ''; $('event-date').value = '';
+    setMsg(msg,'تمت إضافة المناسبة','ok');
+    loadEvents();
+  });
+});
+
+/* ================= الصور ================= */
+const MAX_UPLOAD_BYTES = 20 * 1024 * 1024;
+const MAX_DIMENSION = 1600;
+
+// تصغير الصورة في المتصفح قبل الرفع، حفاظًا على مساحة التخزين وسرعة التحميل
+async function shrinkImage(file){
+  const bitmap = await createImageBitmap(file).catch(() => null);
+  if(!bitmap) return null;
+  const scale = Math.min(1, MAX_DIMENSION / Math.max(bitmap.width, bitmap.height));
+  const w = Math.round(bitmap.width * scale);
+  const h = Math.round(bitmap.height * scale);
+  const canvas = document.createElement('canvas');
+  canvas.width = w; canvas.height = h;
+  canvas.getContext('2d').drawImage(bitmap, 0, 0, w, h);
+  bitmap.close?.();
+  return await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.82));
 }
-window.addPhoto = async function(){
-  const fileInput = document.getElementById('photo-file');
-  const caption = document.getElementById('photo-caption').value.trim();
-  const status = document.getElementById('photo-status');
-  const file = fileInput.files[0];
-  if(!file) return alert('اختاري صورة أولاً');
-  status.textContent = 'جاري الرفع...';
-  const fileName = `${Date.now()}-${file.name}`;
-  const {error: upErr} = await supabase.storage.from('nashat-photos').upload(fileName, file);
-  if(upErr){ status.textContent = 'حدث خطأ في الرفع'; return; }
-  const {data: urlData} = supabase.storage.from('nashat-photos').getPublicUrl(fileName);
-  await supabase.from('photos').insert({image_url: urlData.publicUrl, caption});
-  status.textContent = 'تم الرفع بنجاح';
-  fileInput.value=''; document.getElementById('photo-caption').value='';
-  loadPhotos();
-};
 
-// ================= الحائط =================
+async function loadPhotos(){
+  const grid = $('photo-grid');
+  const empty = $('photo-empty');
+  const {data, failed} = await runQuery(() =>
+    supabase.from('photos').select('*').order('created_at',{ascending:false}));
+  if(failed){
+    empty.style.display = 'none';
+    grid.replaceChildren(errorBlock(loadPhotos));
+    return;
+  }
+  if(data.length === 0){
+    grid.innerHTML = '';
+    empty.textContent = 'لا توجد صور بعد';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+  grid.innerHTML = data.map(p => {
+    const src = safeImageUrl(p.image_url);
+    if(!src) return '';
+    const path = String(p.image_url).slice(PUBLIC_PREFIX.length);
+    return `<div class="photo-item">
+      ${delButton('photos', p.id, path)}
+      <img src="${src}" alt="${escapeHtml(p.caption || 'صورة نشاط')}" loading="lazy">
+    </div>`;
+  }).join('');
+}
+
+$('panel-photo').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const status = $('photo-status');
+  const fileInput = $('photo-file');
+  const caption = $('photo-caption').value.trim();
+  const file = fileInput.files[0];
+  if(!file){ setMsg(status,'اختاري صورة أولاً','err'); return; }
+  if(!file.type.startsWith('image/')){ setMsg(status,'الملف المختار ليس صورة','err'); return; }
+  if(file.size > MAX_UPLOAD_BYTES){ setMsg(status,'الصورة كبيرة جدًا (الحد ٢٠ ميجابايت)','err'); return; }
+
+  withBusy(e.target, 'جاري الرفع...', async () => {
+    setMsg(status,'جاري تجهيز الصورة...');
+    const blob = await shrinkImage(file);
+    if(!blob){ setMsg(status,'تعذّرت قراءة الصورة','err'); return; }
+
+    setMsg(status,'جاري الرفع...');
+    const fileName = `${Date.now()}-${crypto.randomUUID().slice(0,8)}.jpg`;
+    const {error: upErr} = await supabase.storage.from(PHOTO_BUCKET)
+      .upload(fileName, blob, {contentType:'image/jpeg'});
+    if(upErr){ setMsg(status,'تعذّر رفع الصورة. تأكدي من تسجيل الدخول.','err'); return; }
+
+    const {data: urlData} = supabase.storage.from(PHOTO_BUCKET).getPublicUrl(fileName);
+    const {error: rowErr} = await supabase.from('photos').insert({image_url: urlData.publicUrl, caption});
+    if(rowErr){
+      await supabase.storage.from(PHOTO_BUCKET).remove([fileName]);
+      setMsg(status,'تعذّر حفظ الصورة. تأكدي من تسجيل الدخول.','err');
+      return;
+    }
+    setMsg(status,'تم الرفع بنجاح','ok');
+    fileInput.value = ''; $('photo-caption').value = '';
+    loadPhotos();
+  });
+});
+
+/* ================= الحائط ================= */
+const WALL_COLORS = {purple:'wc-purple', maroon:'wc-maroon', orange:'wc-orange', teal:'wc-teal'};
+
 async function loadWall(){
-  const {data} = await supabase.from('wall_posts').select('*').order('created_at',{ascending:false});
-  const grid = document.getElementById('wall-grid');
-  const empty = document.getElementById('wall-empty');
-  if(!data || data.length===0){ grid.innerHTML=''; empty.style.display='block'; return; }
-  empty.style.display='none';
-  const colorClass = {purple:'wc-purple', maroon:'wc-maroon', orange:'wc-orange', teal:'wc-teal'};
+  const grid = $('wall-grid');
+  const empty = $('wall-empty');
+  const {data, failed} = await runQuery(() =>
+    supabase.from('wall_posts').select('*').order('created_at',{ascending:false}));
+  if(failed){
+    empty.style.display = 'none';
+    grid.replaceChildren(errorBlock(loadWall));
+    return;
+  }
+  if(data.length === 0){
+    grid.innerHTML = '';
+    empty.textContent = 'لا توجد رسائل بعد، كوني أول من يكتب!';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
   grid.innerHTML = data.map(w => `
-    <div class="wall-card ${colorClass[w.color]||'wc-purple'}">
+    <div class="wall-card ${WALL_COLORS[w.color] || 'wc-purple'}">
+      ${delButton('wall_posts', w.id)}
       <b>${escapeHtml(w.author_name)}</b>
       ${escapeHtml(w.message)}
     </div>`).join('');
 }
-window.addWall = async function(){
-  const author_name = document.getElementById('wall-author').value.trim();
-  const message = document.getElementById('wall-msg').value.trim();
-  const color = document.getElementById('wall-color').value;
-  if(!author_name || !message) return alert('اكتبي اسمك ورسالتك');
-  await supabase.from('wall_posts').insert({author_name, message, color});
-  document.getElementById('wall-author').value='';
-  document.getElementById('wall-msg').value='';
-  loadWall();
-};
 
-function escapeHtml(str){
-  return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+$('wall-msg').addEventListener('input', (e) => {
+  $('wall-count').textContent = `${e.target.value.length} / 280`;
+});
+
+$('wall-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const msg = $('wall-msg-status');
+  const author_name = $('wall-author').value.trim();
+  const message = $('wall-msg').value.trim();
+  const color = $('wall-color').value;
+  if(!author_name || !message){ setMsg(msg,'اكتبي اسمك ورسالتك','err'); return; }
+  withBusy(e.target, 'جاري النشر...', async () => {
+    const {error} = await supabase.from('wall_posts').insert({author_name, message, color});
+    if(error){ setMsg(msg,'لم يتم النشر، حاولي مرة أخرى','err'); return; }
+    $('wall-author').value = ''; $('wall-msg').value = '';
+    $('wall-count').textContent = '0 / 280';
+    setMsg(msg,'تم نشر رسالتك','ok');
+    loadWall();
+  });
+});
+
+/* ================= التشغيل ================= */
+function renderAll(){
+  loadAnnouncements();
+  loadPlan();
+  loadEvents();
+  loadPhotos();
+  loadWall();
 }
 
-loadAnnouncements();
-loadPlan();
-loadEvents();
-loadPhotos();
-loadWall();
+let session = null;
+try {
+  ({data:{session}} = await supabase.auth.getSession());
+} catch {
+  session = null;   // تعذّر التحقق من الجلسة: نعرض الموقع للزوار على أي حال
+}
+setAdmin(!!session);
 </script>
 
 </body>
