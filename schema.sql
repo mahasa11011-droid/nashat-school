@@ -74,10 +74,50 @@ end $$;
 --   alter table wall_posts validate constraint wall_posts_message_len;
 
 -- -------------------------------------------------------------
--- 3. سياسات الصلاحيات / Row Level Security
+-- 3. من هي رائدة النشاط؟ / Who counts as the leader
+--
+--    مهم: لا تكفي صلاحية "authenticated" وحدها. Supabase يسمح بالتسجيل
+--    الذاتي افتراضيًا، فأي شخص يستطيع إنشاء حساب ويصبح "مسجّل الدخول".
+--    لذلك نحصر الصلاحية في قائمة معتمدة من المستخدمات.
+--
+--    IMPORTANT: granting writes to the `authenticated` role is NOT enough.
+--    With sign-ups enabled (the Supabase default) anyone can auth.signUp()
+--    and become `authenticated`. Writes are restricted to an allow-list.
+-- -------------------------------------------------------------
+create table if not exists leaders (
+  user_id    uuid primary key references auth.users(id) on delete cascade,
+  added_at   timestamptz not null default now(),
+  note       text
+);
+
+alter table leaders enable row level security;
+-- لا سياسات على هذا الجدول: لا يُقرأ ولا يُكتب عبر الـ API إطلاقًا،
+-- ويُدار من لوحة تحكم Supabase وحدها.
+
+create or replace function public.is_leader()
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select exists (select 1 from leaders where user_id = auth.uid());
+$$;
+
+-- ⚠️ بعد إنشاء حسابك في Authentication → Users، انسخي الـ UUID والصقيه هنا:
+--
+--   insert into leaders (user_id, note)
+--   values ('00000000-0000-0000-0000-000000000000', 'رائدة النشاط')
+--   on conflict (user_id) do nothing;
+--
+-- ⚠️ ثم أغلقي التسجيل الذاتي:
+--   Authentication → Sign In / Providers → Email → Allow new users to sign up = OFF
+
+-- -------------------------------------------------------------
+-- 4. سياسات الصلاحيات / Row Level Security
 --
 --    القراءة: مفتوحة للجميع (الموقع عام).
---    الكتابة: لرائدة النشاط المسجّلة الدخول فقط —
+--    الكتابة: لرائدة النشاط المعتمدة فقط —
 --             باستثناء الحائط، فهو مفتوح للنشر للجميع بالتصميم.
 -- -------------------------------------------------------------
 alter table announcements enable row level security;
@@ -86,46 +126,66 @@ alter table events        enable row level security;
 alter table photos        enable row level security;
 alter table wall_posts    enable row level security;
 
+-- نحذف كل السياسات القائمة أولًا. سياسة قديمة متساهلة باسم مختلف تبقى
+-- فعّالة وتُجمع بـ OR مع الجديدة، فتُبطل الحماية دون أن يظهر ذلك.
+-- Policies OR together, so a leftover permissive policy under any other
+-- name would silently keep anonymous writes open.
+do $$
+declare r record;
+begin
+  for r in
+    select policyname, tablename from pg_policies
+    where schemaname = 'public'
+      and tablename in ('announcements','weekly_plan','events','photos','wall_posts')
+  loop
+    execute format('drop policy %I on public.%I', r.policyname, r.tablename);
+  end loop;
+end $$;
+
 -- الجداول التي تديرها رائدة النشاط وحدها
 do $$
 declare t text;
 begin
   foreach t in array array['announcements','weekly_plan','events','photos'] loop
-    execute format('drop policy if exists "public read" on %I', t);
-    execute format('drop policy if exists "leader write" on %I', t);
     execute format('create policy "public read" on %I for select using (true)', t);
-    execute format('create policy "leader write" on %I for all to authenticated using (true) with check (true)', t);
+    execute format('create policy "leader write" on %I for all to authenticated using (public.is_leader()) with check (public.is_leader())', t);
   end loop;
 end $$;
 
 -- الحائط الإلكتروني: الجميع يقرأ وينشر، والحذف لرائدة النشاط فقط
-drop policy if exists "public read"   on wall_posts;
-drop policy if exists "public insert" on wall_posts;
-drop policy if exists "leader delete" on wall_posts;
 create policy "public read"   on wall_posts for select using (true);
 create policy "public insert" on wall_posts for insert with check (true);
-create policy "leader delete" on wall_posts for delete to authenticated using (true);
+create policy "leader delete" on wall_posts for delete to authenticated using (public.is_leader());
 
 -- -------------------------------------------------------------
--- 4. مخزن الصور / Storage bucket
---    القراءة للجميع، والرفع والحذف لرائدة النشاط فقط.
+-- 4b. مخزن الصور / Storage bucket
+--    القراءة للجميع، والرفع والحذف لرائدة النشاط المعتمدة فقط.
 -- -------------------------------------------------------------
 insert into storage.buckets (id, name, public)
 values ('nashat-photos', 'nashat-photos', true)
 on conflict (id) do update set public = true;
 
-drop policy if exists "photos public read"   on storage.objects;
-drop policy if exists "photos leader write"  on storage.objects;
-drop policy if exists "photos leader delete" on storage.objects;
+do $$
+declare r record;
+begin
+  for r in
+    select policyname from pg_policies
+    where schemaname = 'storage' and tablename = 'objects'
+      and (coalesce(qual::text,'') like '%nashat-photos%'
+           or coalesce(with_check::text,'') like '%nashat-photos%')
+  loop
+    execute format('drop policy %I on storage.objects', r.policyname);
+  end loop;
+end $$;
 
 create policy "photos public read" on storage.objects
   for select using (bucket_id = 'nashat-photos');
 
 create policy "photos leader write" on storage.objects
-  for insert to authenticated with check (bucket_id = 'nashat-photos');
+  for insert to authenticated with check (bucket_id = 'nashat-photos' and public.is_leader());
 
 create policy "photos leader delete" on storage.objects
-  for delete to authenticated using (bucket_id = 'nashat-photos');
+  for delete to authenticated using (bucket_id = 'nashat-photos' and public.is_leader());
 
 -- -------------------------------------------------------------
 -- 5. التحقق / Verify
@@ -136,3 +196,7 @@ from pg_tables
 where schemaname = 'public'
   and tablename in ('announcements','weekly_plan','events','photos','wall_posts')
 order by tablename;
+
+-- ويجب أن يظهر صف واحد على الأقل هنا. إن كان فارغًا فلن تستطيع أي رائدة
+-- الكتابة، لأنك لم تضيفي نفسك إلى جدول leaders بعد.
+select l.user_id, u.email from leaders l join auth.users u on u.id = l.user_id;

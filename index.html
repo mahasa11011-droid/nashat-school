@@ -552,11 +552,18 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
    وصلاحية الكتابة تفرضها سياسات RLS (راجعي schema.sql).
    ========================================================= */
 const $ = (id) => document.getElementById(id);
+
+// ترتيب الفصول لا يصح أبجديًا (الثالث يسبق الثاني)، فنرتّبها برقمها
+const TERM_ORDER = {'الفصل الأول':1, 'الفصل الثاني':2, 'الفصل الثالث':3};
+const termRank = (t) => TERM_ORDER[String(t).trim()] ?? 99;
 const modal = $('loginModal');
 const adminToggle = $('adminToggle');
 let lastFocus = null;
 
+let adminState = null;
 function setAdmin(on){
+  if(adminState === on) return;      // يمنع إعادة الرسم مرتين عند تسجيل الدخول
+  adminState = on;
   document.body.classList.toggle('is-admin', on);
   adminToggle.textContent = on ? 'خروج رائدة النشاط' : 'دخول رائدة النشاط';
   if(!on) document.querySelectorAll('.panel.open').forEach(closePanel);
@@ -608,10 +615,8 @@ $('login-form').addEventListener('submit', async (e) => {
   setAdmin(true);
 });
 
-supabase.auth.onAuthStateChange((_event, session) => {
-  document.body.classList.toggle('is-admin', !!session);
-  adminToggle.textContent = session ? 'خروج رائدة النشاط' : 'دخول رائدة النشاط';
-});
+// تسجيل الدخول أو الخروج من تبويب آخر يُحدّث هذا التبويب أيضًا
+supabase.auth.onAuthStateChange((_event, session) => setAdmin(!!session));
 
 /* ===== admin panels ===== */
 function closePanel(p){
@@ -652,13 +657,24 @@ function setMsg(el, text, kind){
 }
 
 // يمنع الإرسال المزدوج عند النقر السريع
-async function withBusy(form, label, fn){
+async function withBusy(form, label, fn, msgEl){
   const btn = form.querySelector('button[type="submit"]');
   if(btn.disabled) return;
   const original = btn.textContent;
   btn.disabled = true; btn.textContent = label;
-  try { await fn(); }
-  finally { btn.disabled = false; btn.textContent = original; }
+  try {
+    await fn();
+  } catch {
+    if(msgEl) setMsg(msgEl, 'حدث خطأ غير متوقع، حاولي مرة أخرى', 'err');
+  } finally {
+    btn.disabled = false; btn.textContent = original;
+  }
+}
+
+// crypto.randomUUID غير متاح على المتصفحات القديمة ولا خارج HTTPS
+function randomId(){
+  if(globalThis.crypto?.randomUUID) return crypto.randomUUID().slice(0,8);
+  return Math.random().toString(16).slice(2,10).padStart(8,'0');
 }
 
 // انقطاع الشبكة قد يرمي استثناءً بدل أن يعيد error، وقد لا يعود الطلب إطلاقًا.
@@ -697,11 +713,13 @@ function delButton(table, id, extra){
 
 async function removeRow(table, id, extra){
   if(!confirm('هل تريدين حذف هذا العنصر نهائيًا؟')) return;
-  if(table === 'photos' && extra){
-    await supabase.storage.from(PHOTO_BUCKET).remove([extra]);
-  }
+  // نحذف السجل أولًا: لو فشل الحذف تبقى الصورة سليمة بدل أن تظهر بطاقة مكسورة
   const {error} = await supabase.from(table).delete().eq('id', id);
   if(error){ alert('تعذّر الحذف. تأكدي من تسجيل الدخول.'); return; }
+  if(table === 'photos' && extra){
+    const {error: fileErr} = await supabase.storage.from(PHOTO_BUCKET).remove([extra]);
+    if(fileErr) alert('حُذفت الصورة من الموقع، لكن تعذّر حذف الملف من المخزن.');
+  }
   renderAll();
 }
 
@@ -741,15 +759,16 @@ $('panel-ann').addEventListener('submit', (e) => {
     $('ann-title').value = ''; $('ann-body').value = '';
     setMsg(msg,'تم نشر الإعلان','ok');
     loadAnnouncements();
-  });
+  }, msg);
 });
 
 /* ================= الخطة الأسبوعية ================= */
 async function loadPlan(){
   const list = $('plan-list');
-  const {data, failed} = await runQuery(() => supabase.from('weekly_plan').select('*')
-    .order('term',{ascending:true}).order('week_number',{ascending:true}));
+  const {data, failed} = await runQuery(() =>
+    supabase.from('weekly_plan').select('*').order('week_number',{ascending:true}));
   if(failed){ list.replaceChildren(errorBlock(loadPlan)); return; }
+  data.sort((a,b) => termRank(a.term) - termRank(b.term) || a.week_number - b.week_number);
   if(data.length === 0){
     list.innerHTML = '<div class="empty">لم تُضَف أي خطة أسبوعية بعد</div>';
     return;
@@ -781,7 +800,7 @@ $('panel-plan').addEventListener('submit', (e) => {
     ['plan-week','plan-range','plan-title','plan-details'].forEach(id => { $(id).value = ''; });
     setMsg(msg,'تمت الإضافة للخطة','ok');
     loadPlan();
-  });
+  }, msg);
 });
 
 /* ================= المناسبات ================= */
@@ -822,7 +841,7 @@ $('panel-event').addEventListener('submit', (e) => {
     $('event-title').value = ''; $('event-date').value = '';
     setMsg(msg,'تمت إضافة المناسبة','ok');
     loadEvents();
-  });
+  }, msg);
 });
 
 /* ================= الصور ================= */
@@ -833,14 +852,24 @@ const MAX_DIMENSION = 1600;
 async function shrinkImage(file){
   const bitmap = await createImageBitmap(file).catch(() => null);
   if(!bitmap) return null;
+  const oversized = Math.max(bitmap.width, bitmap.height) > MAX_DIMENSION;
+  // صورة صغيرة أصلًا تُرفع كما هي، فلا نفقد جودتها ولا شفافيتها
+  if(!oversized && file.size <= 1024 * 1024){
+    bitmap.close?.();
+    return {blob: file, ext: file.type === 'image/png' ? 'png' : 'jpg', type: file.type};
+  }
   const scale = Math.min(1, MAX_DIMENSION / Math.max(bitmap.width, bitmap.height));
   const w = Math.round(bitmap.width * scale);
   const h = Math.round(bitmap.height * scale);
   const canvas = document.createElement('canvas');
   canvas.width = w; canvas.height = h;
-  canvas.getContext('2d').drawImage(bitmap, 0, 0, w, h);
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#FFFFFF';           // خلفية بيضاء بدل السواد عند تسطيح PNG شفاف
+  ctx.fillRect(0, 0, w, h);
+  ctx.drawImage(bitmap, 0, 0, w, h);
   bitmap.close?.();
-  return await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.82));
+  const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.82));
+  return blob ? {blob, ext:'jpg', type:'image/jpeg'} : null;
 }
 
 async function loadPhotos(){
@@ -860,10 +889,16 @@ async function loadPhotos(){
     return;
   }
   empty.style.display = 'none';
-  grid.innerHTML = data.map(p => {
+  const usable = data.filter(p => safeImageUrl(p.image_url));
+  if(usable.length === 0){
+    grid.innerHTML = '';
+    empty.textContent = 'تعذّر عرض الصور المحفوظة';
+    empty.style.display = 'block';
+    return;
+  }
+  grid.innerHTML = usable.map(p => {
     const src = safeImageUrl(p.image_url);
-    if(!src) return '';
-    const path = String(p.image_url).slice(PUBLIC_PREFIX.length);
+    const path = decodeURIComponent(String(p.image_url).slice(PUBLIC_PREFIX.length));
     return `<div class="photo-item">
       ${delButton('photos', p.id, path)}
       <img src="${src}" alt="${escapeHtml(p.caption || 'صورة نشاط')}" loading="lazy">
@@ -883,13 +918,13 @@ $('panel-photo').addEventListener('submit', (e) => {
 
   withBusy(e.target, 'جاري الرفع...', async () => {
     setMsg(status,'جاري تجهيز الصورة...');
-    const blob = await shrinkImage(file);
-    if(!blob){ setMsg(status,'تعذّرت قراءة الصورة','err'); return; }
+    const prepared = await shrinkImage(file);
+    if(!prepared){ setMsg(status,'تعذّرت قراءة الصورة','err'); return; }
 
     setMsg(status,'جاري الرفع...');
-    const fileName = `${Date.now()}-${crypto.randomUUID().slice(0,8)}.jpg`;
+    const fileName = `${Date.now()}-${randomId()}.${prepared.ext}`;
     const {error: upErr} = await supabase.storage.from(PHOTO_BUCKET)
-      .upload(fileName, blob, {contentType:'image/jpeg'});
+      .upload(fileName, prepared.blob, {contentType: prepared.type});
     if(upErr){ setMsg(status,'تعذّر رفع الصورة. تأكدي من تسجيل الدخول.','err'); return; }
 
     const {data: urlData} = supabase.storage.from(PHOTO_BUCKET).getPublicUrl(fileName);
@@ -902,7 +937,7 @@ $('panel-photo').addEventListener('submit', (e) => {
     setMsg(status,'تم الرفع بنجاح','ok');
     fileInput.value = ''; $('photo-caption').value = '';
     loadPhotos();
-  });
+  }, status);
 });
 
 /* ================= الحائط ================= */
@@ -951,7 +986,7 @@ $('wall-form').addEventListener('submit', (e) => {
     $('wall-count').textContent = '0 / 280';
     setMsg(msg,'تم نشر رسالتك','ok');
     loadWall();
-  });
+  }, msg);
 });
 
 /* ================= التشغيل ================= */
