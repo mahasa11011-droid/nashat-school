@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>منصة النشاط المدرسي</title>
-<meta name="description" content="منصة النشاط المدرسي لمدرسة الموهوبين التقنية الثانوية بنات — الإعلانات والخطة الأسبوعية والمناسبات وصور الأنشطة والحائط الإلكتروني.">
+<meta name="description" content="منصة النشاط المدرسي لمدرسة الموهوبين التقنية الثانوية بنات — الإعلانات والخطة الأسبوعية والمناسبات والمسابقات وصور الأنشطة والحائط الإلكتروني.">
 <meta name="theme-color" content="#5B4FCF">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="ar_SA">
@@ -198,6 +198,33 @@
   .event-info h3{margin:0; font-size:0.95rem;}
   .event-info .d{font-size:0.78rem; color:var(--muted);}
 
+  /* ===== contests ===== */
+  .contest-card{
+    background:var(--white); border-radius:var(--radius);
+    box-shadow:var(--shadow); padding:18px 20px; margin-bottom:12px;
+    position:relative; border-inline-start:4px solid var(--navy);
+  }
+  .contest-card.ended{opacity:0.6; border-inline-start-color:var(--muted);}
+  .contest-top{display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-bottom:10px; padding-inline-end:36px;}
+  .contest-card h3{margin:0; font-size:1.02rem; color:var(--purple-deep);}
+  .badge{font-family:'Cairo'; font-weight:700; font-size:0.72rem; padding:3px 10px; border-radius:999px;}
+  .badge.field{background:var(--purple-soft); color:var(--purple-deep);}
+  .badge.live{background:var(--teal-bg); color:var(--teal);}
+  .badge.soon{background:var(--orange-bg); color:var(--orange);}
+  .badge.done{background:var(--navy-bg); color:var(--muted);}
+  .contest-meta{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+    gap:8px 16px; margin:0; font-size:0.85rem;
+  }
+  .contest-meta dt{font-size:0.72rem; color:var(--muted); font-weight:700;}
+  .contest-meta dd{margin:0; color:var(--ink);}
+  .reg-link{
+    display:inline-block; margin-top:12px; text-decoration:none;
+    background:var(--purple); color:#fff; padding:8px 18px; border-radius:999px;
+    font-family:'Tajawal'; font-weight:700; font-size:0.82rem;
+  }
+  .reg-link:hover{background:var(--purple-deep);}
+
   /* ===== photos ===== */
   .photo-grid{
     display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
@@ -227,7 +254,7 @@
 
   /* a pasted link must never be able to stretch the page (F8) */
   .wall-card, .ann-card h3, .ann-card p, .plan-body h3, .plan-body p,
-  .plan-body .range, .event-info h3{
+  .plan-body .range, .event-info h3, .contest-card h3, .contest-meta dd{
     overflow-wrap:anywhere; word-break:break-word;
   }
 
@@ -333,6 +360,7 @@
       <a href="#announcements">الإعلانات</a>
       <a href="#plan">الخطة الأسبوعية</a>
       <a href="#events">المناسبات</a>
+      <a href="#contests">المسابقات</a>
       <a href="#photos">الصور</a>
       <a href="#wall">الحائط</a>
     </nav>
@@ -464,10 +492,41 @@
   <div id="event-list"><div class="empty">جاري التحميل…</div></div>
 </section>
 
+<!-- ================= المسابقات ================= -->
+<section id="contests">
+  <div class="sec-head">
+    <div class="sec-icon" style="background:var(--navy)" aria-hidden="true">04</div>
+    <div>
+      <h2>المسابقات</h2>
+      <div class="sub">المسابقات المتاحة للطالبات مع مواعيدها ورابط التسجيل</div>
+    </div>
+    <button class="add-btn admin-only" type="button" data-panel="panel-contest" aria-expanded="false" aria-controls="panel-contest">+ إضافة مسابقة</button>
+  </div>
+
+  <form class="panel" id="panel-contest" novalidate>
+    <label for="contest-name">اسم المسابقة</label>
+    <input type="text" id="contest-name" name="name" maxlength="120" required placeholder="مثال: مسابقة الأولمبياد الوطني للإبداع العلمي">
+    <label for="contest-field">المجال</label>
+    <input type="text" id="contest-field" name="field" maxlength="60" required placeholder="مثال: العلوم والتقنية">
+    <label for="contest-start">تاريخ البداية</label>
+    <input type="date" id="contest-start" name="start_date" required>
+    <label for="contest-end">تاريخ النهاية</label>
+    <input type="date" id="contest-end" name="end_date" required>
+    <label for="contest-link">رابط التسجيل</label>
+    <input type="url" id="contest-link" name="reg_link" maxlength="500" dir="ltr" placeholder="https://...">
+    <label for="contest-org">الجهة المنفذة</label>
+    <input type="text" id="contest-org" name="organizer" maxlength="120" required placeholder="مثال: موهبة">
+    <button class="btn" type="submit">إضافة المسابقة</button>
+    <p class="form-msg" id="contest-msg" role="status"></p>
+  </form>
+
+  <div id="contest-list"><div class="empty">جاري التحميل…</div></div>
+</section>
+
 <!-- ================= الصور ================= -->
 <section id="photos">
   <div class="sec-head">
-    <div class="sec-icon" style="background:var(--orange)" aria-hidden="true">04</div>
+    <div class="sec-icon" style="background:var(--orange)" aria-hidden="true">05</div>
     <div>
       <h2>صور النشاط</h2>
       <div class="sub">لحظات من فعاليات وبرامج النشاط</div>
@@ -491,7 +550,7 @@
 <!-- ================= الحائط الإلكتروني ================= -->
 <section id="wall">
   <div class="sec-head">
-    <div class="sec-icon" style="background:var(--maroon)" aria-hidden="true">05</div>
+    <div class="sec-icon" style="background:var(--maroon)" aria-hidden="true">06</div>
     <div>
       <h2>الحائط الإلكتروني</h2>
       <div class="sub">مساحة للرسائل والتهاني والإنجازات، مفتوحة للجميع</div>
@@ -844,6 +903,89 @@ $('panel-event').addEventListener('submit', (e) => {
   }, msg);
 });
 
+/* ================= المسابقات ================= */
+// الرابط يُقبل فقط إذا كان http أو https، لمنع روابط javascript: وما شابهها
+function safeLink(url){
+  try {
+    const u = new URL(String(url || '').trim());
+    return (u.protocol === 'https:' || u.protocol === 'http:') ? u.href : '';
+  } catch { return ''; }
+}
+
+function fmtDate(d){
+  return d.toLocaleDateString('ar-SA-u-ca-gregory',{year:'numeric',month:'long',day:'numeric'});
+}
+
+function contestState(c, today){
+  const start = parseLocalDate(c.start_date), end = parseLocalDate(c.end_date);
+  if(end < today) return {key:'done', label:'انتهت', order:2};
+  if(start > today) return {key:'soon', label:'قادمة', order:1};
+  return {key:'live', label:'جارية', order:0};
+}
+
+async function loadContests(){
+  const list = $('contest-list');
+  const {data, failed} = await runQuery(() =>
+    supabase.from('contests').select('*').order('start_date',{ascending:true}));
+  if(failed){ list.replaceChildren(errorBlock(loadContests)); return; }
+  if(data.length === 0){
+    list.innerHTML = '<div class="empty">لا توجد مسابقات حاليًا، ستظهر هنا فور إضافتها</div>';
+    return;
+  }
+  const today = new Date(); today.setHours(0,0,0,0);
+  const rows = data.map(c => ({c, st: contestState(c, today)}))
+    .sort((a,b) => a.st.order - b.st.order
+      || parseLocalDate(a.c.start_date) - parseLocalDate(b.c.start_date));
+  list.innerHTML = rows.map(({c, st}) => {
+    const link = safeLink(c.reg_link);
+    const reg = link && st.key !== 'done'
+      ? `<a class="reg-link" href="${escapeHtml(link)}" target="_blank" rel="noopener noreferrer">التسجيل في المسابقة</a>` : '';
+    return `<div class="contest-card${st.key === 'done' ? ' ended' : ''}">
+      ${delButton('contests', c.id)}
+      <div class="contest-top">
+        <h3>${escapeHtml(c.name)}</h3>
+        <span class="badge field">${escapeHtml(c.field)}</span>
+        <span class="badge ${st.key}">${st.label}</span>
+      </div>
+      <dl class="contest-meta">
+        <div><dt>تاريخ البداية</dt><dd>${fmtDate(parseLocalDate(c.start_date))}</dd></div>
+        <div><dt>تاريخ النهاية</dt><dd>${fmtDate(parseLocalDate(c.end_date))}</dd></div>
+        <div><dt>الجهة المنفذة</dt><dd>${escapeHtml(c.organizer)}</dd></div>
+      </dl>
+      ${reg}
+    </div>`;
+  }).join('');
+}
+
+$('panel-contest').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const msg = $('contest-msg');
+  const name = $('contest-name').value.trim();
+  const field = $('contest-field').value.trim();
+  const start_date = $('contest-start').value;
+  const end_date = $('contest-end').value;
+  const rawLink = $('contest-link').value.trim();
+  const organizer = $('contest-org').value.trim();
+  if(!name || !field || !start_date || !end_date || !organizer){
+    setMsg(msg,'عبي اسم المسابقة والمجال والتاريخين والجهة المنفذة','err'); return;
+  }
+  if(end_date < start_date){ setMsg(msg,'تاريخ النهاية يجب أن يكون بعد تاريخ البداية','err'); return; }
+  let reg_link = null;
+  if(rawLink){
+    reg_link = safeLink(rawLink);
+    if(!reg_link){ setMsg(msg,'رابط التسجيل غير صحيح، يجب أن يبدأ بـ https://','err'); return; }
+  }
+  withBusy(e.target, 'جاري الإضافة...', async () => {
+    const {error} = await supabase.from('contests')
+      .insert({name, field, start_date, end_date, reg_link, organizer});
+    if(error){ setMsg(msg,'لم تتم الإضافة. تأكدي من تسجيل الدخول ثم أعيدي المحاولة.','err'); return; }
+    ['contest-name','contest-field','contest-start','contest-end','contest-link','contest-org']
+      .forEach(id => { $(id).value = ''; });
+    setMsg(msg,'تمت إضافة المسابقة','ok');
+    loadContests();
+  }, msg);
+});
+
 /* ================= الصور ================= */
 const MAX_UPLOAD_BYTES = 20 * 1024 * 1024;
 const MAX_DIMENSION = 1600;
@@ -994,6 +1136,7 @@ function renderAll(){
   loadAnnouncements();
   loadPlan();
   loadEvents();
+  loadContests();
   loadPhotos();
   loadWall();
 }
